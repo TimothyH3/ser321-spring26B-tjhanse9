@@ -18,6 +18,8 @@ package funHttpServer;
 
 import java.io.*;
 import java.net.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -259,16 +261,45 @@ class WebServer {
           //     "/repos/OWNERNAME/REPONAME/contributors"
 
           Map<String, String> query_pairs = new LinkedHashMap<String, String>();
+          String json;
+          try {
           query_pairs = splitQuery(request.replace("github?", ""));
-          String json = fetchURL("https://api.github.com/" + query_pairs.get("query"));
-          System.out.println(json);
+          json = fetchURL("https://api.github.com/" + query_pairs.get("query"));
+          }
+          catch(Exception e) {
+            // Error handling for URL query
+            builder.append("HTTP/1.1 400 Bad Request\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append("Error: The URL query is not formatted correctly. Please use the format ?query=X");
+            return builder.toString().getBytes();
+          }
+          try {
+              JSONArray repoArray = new JSONArray(json);
+              builder.append("HTTP/1.1 200 OK\n");
+              builder.append("Content-Type: text/html; charset=utf-8\n");
+              builder.append("\n");
+              builder.append("<h3>Repositories:</h3>\n");
 
-          builder.append("HTTP/1.1 200 OK\n");
-          builder.append("Content-Type: text/html; charset=utf-8\n");
-          builder.append("\n");
-          builder.append("Check the todos mentioned in the Java source file");
-          // TODO: Parse the JSON returned by your fetch and create an appropriate
-          // response based on what the assignment document asks for
+              for (int i = 0; i < repoArray.length(); i++) {
+                  JSONObject repo = repoArray.getJSONObject(i);
+                  String fullName = repo.getString("full_name");
+                  int id = repo.getInt("id");
+                  JSONObject owner = repo.getJSONObject("owner");
+                  String login = owner.getString("login");
+                  builder.append("<p>Repo: " + fullName + " | ID: " + id + " | Owner: " + login + "</p>\n");
+
+              }
+          } catch (Exception e) {
+            // Error handling for GitHub user not found
+            builder.append("HTTP/1.1 404 Not Found\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append("GitHub user not found. Please check the username and try again.");
+            return builder.toString().getBytes();
+          }
+          
+          
 
         } else {
           // if the request is not recognized at all
