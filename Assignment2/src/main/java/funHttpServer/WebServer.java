@@ -198,8 +198,17 @@ class WebServer {
           // wrong data is given this just crashes
 
           Map<String, String> query_pairs = new LinkedHashMap<String, String>();
-          // extract path parameters
-          query_pairs = splitQuery(request.replace("multiply?", ""));
+          // extract path parameters with error handling to avoid crash
+          try {
+            query_pairs = splitQuery(request.replace("multiply?", ""));
+          }
+          catch(Exception e) {
+            builder.append("HTTP/1.1 400 Bad Request\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append("Error: The URL query is not formatted correctly. Please use the format ?num1=X&num2=Y");
+            return builder.toString().getBytes();
+          }
 
           // Initialize num variables
           Integer num1, num2;
