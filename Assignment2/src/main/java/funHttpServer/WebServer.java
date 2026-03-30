@@ -275,6 +275,18 @@ class WebServer {
             return builder.toString().getBytes();
           }
           try {
+              // GitHub sent back an error message, print that instead.
+              if (json.startsWith("{")) {
+                  JSONObject errorObj = new JSONObject(json);
+                  String githubError = errorObj.getString("message");
+                  
+                  builder.append("HTTP/1.1 404 Not Found\n");
+                  builder.append("Content-Type: text/html; charset=utf-8\n");
+                  builder.append("\n");
+                  builder.append("GitHub Error: " + githubError);
+                  return builder.toString().getBytes();
+              }
+
               JSONArray repoArray = new JSONArray(json);
               builder.append("HTTP/1.1 200 OK\n");
               builder.append("Content-Type: text/html; charset=utf-8\n");
@@ -295,7 +307,7 @@ class WebServer {
             builder.append("HTTP/1.1 404 Not Found\n");
             builder.append("Content-Type: text/html; charset=utf-8\n");
             builder.append("\n");
-            builder.append("GitHub user not found. Please check the username and try again.");
+            builder.append("Error: GitHub user not found or there was an issue parsing the data.");
             return builder.toString().getBytes();
           }
           
