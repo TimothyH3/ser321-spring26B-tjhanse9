@@ -3,12 +3,34 @@
 		<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
 	</head>
 	<body>
-		<h3>You can make the following GET requests<h3>
+		<h3>You can make the following GET requests</h3>
 		<ul>
 			<li>/file/sample.html -- returns the content of the file sample.html</li>
-			<li>/json -- returns a json of the /random request</a></li>
-			<li>/random -- returns index.html</a></li>
+			<li>/json -- returns a json of the /random request</li>
+			<li>/random -- returns index.html</li>
+			<br>
+			
+			<li>
+				/multiply -- Multiplies two numbers together.<br>
+				Example: /multiply?num1=5&num2=4
+			</li>
+			<br>
+			<li>
+				/github -- Fetches a list of public repositories for a specified GitHub user.<br>
+				Example: /github?query=users/amehlhase316/repos
+			</li>
+			<br>
+			<li>
+				/madlibs -- Generates a funny Mad Libs sentence. Requires two arguments: a <code>noun</code> and an <code>adjective</code>.<br>
+				Example: /madlibs?noun=potato&adjective=angry
+			</li>
+			<br>
+			<li>
+				/tempconvert -- Converts a temperature between Celsius and Fahrenheit. Requires a temprature number and the scale you are converting from (C or F).<br>
+				Example: /tempconvert?temp=100&scale=C
+			</li>
 		</ul>
+		
 		<h3>File Structure in www (you can use /file/www/FILENAME):</h3>
 		${links}
 	</body>
