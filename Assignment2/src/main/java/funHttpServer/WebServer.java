@@ -313,7 +313,90 @@ class WebServer {
           
           
 
-        } else {
+        } 
+        else if (request.contains("madlibs?")) {
+            // Mad Libs Generator
+            Map<String, String> query_pairs = new LinkedHashMap<String, String>();
+            try {
+                query_pairs = splitQuery(request.replace("madlibs?", ""));
+                
+                String noun = query_pairs.get("noun");
+                String adjective = query_pairs.get("adjective");
+                
+                // check for missing parameters
+                if (noun == null || adjective == null) {
+                    throw new IllegalArgumentException("Missing parameters");
+                }
+                
+                // success
+                builder.append("HTTP/1.1 200 OK\n");
+                builder.append("Content-Type: text/html; charset=utf-8\n");
+                builder.append("\n");
+                builder.append("<h3>Your Mad Libs Story:</h3>\n");
+                builder.append("<p>Hagrid's newest magical pet is a <b>" + adjective + "</b> <b>" + noun + "</b> that keeps trying to eat the garden gnomes.</p>\n");
+
+            } catch (Exception e) {
+                // Error handling for missing or incorrect paramaters
+                builder.append("HTTP/1.1 400 Bad Request\n");
+                builder.append("Content-Type: text/html; charset=utf-8\n");
+                builder.append("\n");
+                builder.append("Error: Please include a 'noun' and an 'adjective'. Example: ?noun=warthog&adjective=smelly");
+            }
+
+        } else if (request.contains("tempconvert?")) {
+            // temprature conversion
+            Map<String, String> query_pairs = new LinkedHashMap<String, String>();
+            try {
+                query_pairs = splitQuery(request.replace("tempconvert?", ""));
+                
+                String tempStr = query_pairs.get("temp");
+                String scale = query_pairs.get("scale");
+                
+                // check for missing parameters
+                if (tempStr == null || scale == null) {
+                    throw new IllegalArgumentException("Missing parameters");
+                }
+                
+                // convert string to double 
+                double temp = Double.parseDouble(tempStr);
+                double result = 0;
+                String resultScale = "";
+                
+                // temp converstion 
+                if (scale.equalsIgnoreCase("C")) {
+                    result = (temp * 9 / 5) + 32;
+                    resultScale = "Fahrenheit";
+                    scale = "Celsius";
+                } else if (scale.equalsIgnoreCase("F")) {
+                    result = (temp - 32) * 5 / 9;
+                    resultScale = "Celsius";
+                    scale = "Fahrenheit";
+                } else {
+                    throw new IllegalArgumentException("Invalid scale");
+                }
+                
+                // success
+                builder.append("HTTP/1.1 200 OK\n");
+                builder.append("Content-Type: text/html; charset=utf-8\n");
+                builder.append("\n");
+                builder.append("<h3>Temperature Conversion:</h3>\n");
+                builder.append("<p>" + temp + " degrees " + scale + " is equal to <b>" + String.format("%.2f", result) + " degrees " + resultScale + "</b>.</p>\n");
+
+            } catch (NumberFormatException e) {
+                // error handling for invalid number
+                builder.append("HTTP/1.1 400 Bad Request\n");
+                builder.append("Content-Type: text/html; charset=utf-8\n");
+                builder.append("\n");
+                builder.append("Error: The 'temp' argument must be a valid number.");
+            } catch (Exception e) {
+                // error handling for missing or incorrect paramaters
+                builder.append("HTTP/1.1 400 Bad Request\n");
+                builder.append("Content-Type: text/html; charset=utf-8\n");
+                builder.append("\n");
+                builder.append("Error: Please provide a valid 'temp' (number) and 'scale' (C or F). Example: ?temp=100&scale=C");
+            }
+          }
+        else {
           // if the request is not recognized at all
 
           builder.append("HTTP/1.1 400 Bad Request\n");
