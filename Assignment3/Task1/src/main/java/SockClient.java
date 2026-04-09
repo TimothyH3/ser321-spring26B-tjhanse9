@@ -1,11 +1,9 @@
-
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Scanner;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -41,9 +39,11 @@ class SockClient {
       System.out.println("Client connected to server.");
       boolean requesting = true;
       while (requesting) {
-        System.out.println("What would you like to do: 1 - echo, 2 - add, 3 - string concatenation, 4 - CalculateMany, 5 - playlist (0 to quit)");
+        System.out.println("What would you like to do:\n1 - echo\n2 - add\n3 - string concatenation\n4 - CalculateMany\n5 - playlist\n6 - analyzer\n0 - quit");
         Scanner scanner = new Scanner(System.in);
-        int choice = Integer.parseInt(scanner.nextLine());
+        String choiceInput = scanner.nextLine();
+        System.out.println(choiceInput);
+        int choice = Integer.parseInt(choiceInput);
         // You can assume the user put in a correct input, you do not need to handle errors here
         // You can assume the user inputs a String when asked and an int when asked. So you do not have to handle user input checking
         JSONObject json = new JSONObject(); // request object
@@ -55,70 +55,124 @@ class SockClient {
           case 1:
             System.out.println("Choose echo, which String do you want to send?");
             String message = scanner.nextLine();
+            System.out.println(message);
             json.put("type", "echo");
             json.put("data", message);
             break;
           case 2:
             System.out.println("Choose add, enter first number:");
             String num1 = scanner.nextLine();
+            System.out.println(num1);
             json.put("type", "add");
             json.put("num1", num1);
 
             System.out.println("Enter second number:");
             String num2 = scanner.nextLine();
+            System.out.println(num2);
             json.put("num2", num2);
             break;
           case 3:
             System.out.println("Choose string concatenation, enter first string:");
             String str1 = scanner.nextLine();
+            System.out.println(str1);
             System.out.println("Enter second string:");
             String str2 = scanner.nextLine();
+            System.out.println(str2);
             json.put("type", "stringconcatenation");
             json.put("string1", str1);
             json.put("string2", str2);
             break;
           case 4:
             JSONArray jsonList = new JSONArray();
-            System.out.println("Enter the operation:");
+            System.out.println("Enter the operation (add, multiply, average):");
             String operation = scanner.nextLine();
+            System.out.println(operation);
 
             boolean cont = true;
-            while (cont) {
-                System.out.println("Enter a number or 'd' when finished:");
-                String input = scanner.nextLine();
+              while (cont) {
+                  System.out.println("Enter next number or 'd' when finished:");
+                  String input = scanner.nextLine();
+                  System.out.println(input);
+                  
+                  if (input.equalsIgnoreCase("d")) {
+                    if (jsonList.length() >= 2){
+                      cont = false;
+                    } else {System.out.print("Numlist must contain at least two numbers.");}
 
-                if (input.equalsIgnoreCase("d")) {
-                    cont = false;
-                } else {
-                    try {
-                        jsonList.put(Integer.parseInt(input));
-                    } catch (NumberFormatException e) {
-                        System.out.println("Not a valid number. Try again.");
-                    }
+                  } else {
+                      try {
+                          jsonList.put(Integer.parseInt(input));
+                      } catch (NumberFormatException e) {
+                          System.out.println("Not a valid number. Try again.");
+                      }
+                  }
+                  System.out.print("NumList: {" );
+                  for (int i = 0; i < jsonList.length(); i++) {
+                    System.out.print(jsonList.getInt(i) + " " );
+                  }
+                  System.out.println("}");
                 }
-            }
 
             json.put("type", "calculatemany");
             json.put("operation", operation);
             json.put("numList", jsonList);
             break;
           case 5:
-            System.out.println("Playlist Manager. Enter action (add, remove, list, clear):");
-            String action = scanner.nextLine().trim().toLowerCase();
+            System.out.println("Playlist Manager. Enter action:\n1 - add\n2 - remove\n3 - list\n4 - clear");
+            String actionInput = scanner.nextLine().trim();
+            System.out.println(actionInput);
+            String action = actionInput.toLowerCase();
+            
+            if (action.equals("1")) action = "add";
+            else if (action.equals("2")) action = "remove";
+            else if (action.equals("3")) action = "list";
+            else if (action.equals("4")) action = "clear";
             
             json.put("type", "playlist");
             json.put("action", action);
 
             if (action.equals("add")) {
                 System.out.println("Enter song title:");
-                json.put("song", scanner.nextLine());
+                String song = scanner.nextLine();
+                System.out.println(song);
+                json.put("song", song);
+                
                 System.out.println("Enter artist name:");
-                json.put("artist", scanner.nextLine());
+                String artist = scanner.nextLine();
+                System.out.println(artist);
+                json.put("artist", artist);
             } else if (action.equals("remove")) {
                 System.out.println("Enter song title to remove:");
-                json.put("song", scanner.nextLine());
+                String song = scanner.nextLine();
+                System.out.println(song);
+                json.put("song", song);
             }
+            break;
+          case 6:
+            System.out.println("Analyzer. What action do you want to perform?\n1 - wordcount\n2 - charcount\n3 - search");
+            String analyzerInput = scanner.nextLine().trim();
+            System.out.println(analyzerInput);
+            String analyzerAction = analyzerInput.toLowerCase();
+            
+            if (analyzerAction.equals("1")) analyzerAction = "wordcount";
+            else if (analyzerAction.equals("2")) analyzerAction = "charcount";
+            else if (analyzerAction.equals("3")) analyzerAction = "search";
+            
+            System.out.println("Enter text:");
+            String text = scanner.nextLine();
+            System.out.println(text);
+            json.put("type", "analyzer");
+            json.put("action", analyzerAction);
+            json.put("text", text);
+            if (analyzerAction.equals("search")) {
+                System.out.println("Enter the word to search for:");
+                String findTerm = scanner.nextLine();
+                System.out.println(findTerm);
+                json.put("find", findTerm);
+            }
+            break;  
           }
+          
         if(!requesting) {
           continue;
         }
@@ -156,8 +210,22 @@ class SockClient {
               if (res.has("songCount")) {
                   System.out.println(">> Total songs in playlist: " + res.getInt("songCount"));
               }
-
-          } else {
+            } else if (res.getString("type").equals("analyzer")) {
+              System.out.println("Action: " + res.getString("action"));
+              
+              if (res.has("count")) {
+                  System.out.println("Count: " + res.getInt("count"));
+              }
+              
+              if (res.has("positions")) {
+                  JSONArray positions = res.getJSONArray("positions");
+                  System.out.print("Found at indices: ");
+                  for (int j = 0; j < positions.length(); j++) {
+                      System.out.print(positions.getInt(j) + (j < positions.length() - 1 ? ", " : ""));
+                  }
+                  System.out.println();
+              }
+            } else {
               if (res.has("result")) {
                   System.out.println(res.get("result"));
               } else if (res.has("sum")) {

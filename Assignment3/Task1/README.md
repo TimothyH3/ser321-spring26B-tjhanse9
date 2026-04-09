@@ -452,17 +452,69 @@ Error response: When the request is not valid JSON
         "message" : "req not JSON"
     }
 
----
 
-## Task 1.2: Mystery Service Discovery ##
+## Task 1.2 Analyzer: ###
+This service analyzes a provided string of text. The client can request a word count, a character count, or search for the occurrences of a specific word or phrase.
 
-A mystery service is included in this starter code (provided as a JAR file). Your task is to:
-1. Discover the complete protocol through systematic testing
-2. Document your discovery process and protocol in `discovery_and_protocol.md`
+**Action: wordcount / charcount**
 
-The service type is `"analyzer"` - it is already integrated into the server. All other details must be discovered through testing.
+Request:
 
-See PDF and `discovery_and_protocol_TEMPLATE.md` for the required documentation format.
+JSON
+    {
+        "type" : "analyzer",
+        "action" : <String>, -- "wordcount" or "charcount"
+        "text" : <String> -- The string to be analyzed
+    }
+Success response:
 
----
+JSON
+    {
+        "type" : "analyzer",
+        "action" : <String>, -- echoes the requested action
+        "ok" : true,
+        "count" : <Number> -- The result of the count
+    }
 
+**Action: search**
+
+Request:
+
+JSON
+    {
+        "type" : "analyzer",
+        "action" : "search",
+        "text" : <String>, -- The full string to be analyzed
+        "find" : <String> -- The specific word or phrase to search for
+    }
+Success response:
+
+JSON
+    {
+        "type" : "analyzer",
+        "action" : "search",
+        "ok" : true,
+        "count" : <Number>, -- The number of times the 'find' string appeared
+        "found" : <bool>, -- True if the string was found, false otherwise
+        "find" : <String>, -- Echoes the search term
+        "positions" : [<Number>] -- JSON Array of the exact starting indices where the term was found
+    }
+**Error responses:**
+
+Invalid action:
+
+JSON
+    {
+        "ok" : false,
+        "message" : "Action '<action>' not supported. Valid actions: wordcount, charcount, search"
+    }
+Missing 'find' field (when action is search):
+
+JSON
+    {
+        "ok" : false,
+        "message" : "Field 'find' does not exist in request"
+    }
+
+**Bug:**
+The analyzer service does not properly validate the data type of the fields with a try-catch block. If a client sends an integer like "text": 404 instead of a String, the server crashes.
