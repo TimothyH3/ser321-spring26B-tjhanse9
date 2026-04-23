@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = '18'
+targetCompatibility = '18'
+
+// run leader
+task runLeader(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'Leader'
+    standardInput = System.in
+    
+    if (project.hasProperty("args")) {
+        args project.getProperty("args").split(" ")
+    }
+}
+
+// run worker
+task runWorker(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'Worker'
+    standardInput = System.in
+    
+    if (project.hasProperty("args")) {
+        args project.getProperty("args").split(" ")
+    }
+}
