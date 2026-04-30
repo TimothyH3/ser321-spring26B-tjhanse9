@@ -57,13 +57,16 @@ class ConverterImpl extends ConverterGrpc.ConverterImplBase{
 
     // helper method for verifying conversion type compatibility
     public ConversionType ConversionMatch(String input1, String input2) {
-        if (temperatureTypes.contains(input1) && temperatureTypes.contains(input2)) {
+        String normalizedInput1 = input1.toLowerCase();
+        String normalizedInput2 = input2.toLowerCase();
+        
+        if (temperatureTypes.contains(normalizedInput1) && temperatureTypes.contains(normalizedInput2)) {
             return ConversionType.TEMPERATURE;
         }
-        if (lengthTypes.contains(input1) && lengthTypes.contains(input2)) {
+        if (lengthTypes.contains(normalizedInput1) && lengthTypes.contains(normalizedInput2)) {
             return ConversionType.LENGTH;
         }
-        if (weightTypes.contains(input1) && weightTypes.contains(input2)) {
+        if (weightTypes.contains(normalizedInput1) && weightTypes.contains(normalizedInput2)) {
             return ConversionType.WEIGHT;
         }
         return null;
@@ -72,7 +75,10 @@ class ConverterImpl extends ConverterGrpc.ConverterImplBase{
     // convertion logic helper
     public double convert(double value, String fromUnit, String toUnit) {
         double result = 0;
-        switch (fromUnit) {
+        String normalizedFromUnit = fromUnit.toLowerCase();
+        String normalizedToUnit = toUnit.toLowerCase();
+        
+        switch (normalizedFromUnit) {
             case "kilometers":
                 switch (toUnit) {
                     case "miles":

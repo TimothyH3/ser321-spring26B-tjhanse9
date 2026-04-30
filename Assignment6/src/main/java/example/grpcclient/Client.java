@@ -521,16 +521,16 @@ public class Client {
               fromSelection = Integer.parseInt(reader.readLine());
               switch (fromSelection) {
                 case 1:
-                  request.setFromUnit("KILOMETERS");
+                  request.setFromUnit("kilometers");
                   break;
                 case 2:
-                  request.setFromUnit("MILES");
+                  request.setFromUnit("miles");
                   break;
                 case 3:
-                  request.setFromUnit("FEET");
+                  request.setFromUnit("feet");
                   break;
                 case 4:
-                  request.setFromUnit("YARDS");
+                  request.setFromUnit("yards");
                   break;
                 case 0:
                   return;
@@ -549,16 +549,16 @@ public class Client {
               toSelection = Integer.parseInt(reader.readLine());
               switch (toSelection) {
                 case 1:
-                  request.setToUnit("KILOMETERS");
+                  request.setToUnit("kilometers");
                   break;
                 case 2:
-                  request.setToUnit("MILES");
+                  request.setToUnit("miles");
                   break;
                 case 3:
-                  request.setToUnit("FEET");
+                  request.setToUnit("feet");
                   break;
                 case 4:
-                  request.setToUnit("YARDS");
+                  request.setToUnit("yards");
                   break;
                 case 0:
                   return;
@@ -590,10 +590,10 @@ public class Client {
               fromSelection = Integer.parseInt(reader.readLine());
               switch (fromSelection) {
                 case 1:
-                  request.setFromUnit("KILOGRAMS");
+                  request.setFromUnit("kilograms");
                   break;
                 case 2:
-                  request.setFromUnit("POUNDS");
+                  request.setFromUnit("pounds");
                   break;
                 case 0:
                   return;
@@ -612,10 +612,10 @@ public class Client {
               toSelection = Integer.parseInt(reader.readLine());
               switch (toSelection) {
                 case 1:
-                  request.setToUnit("KILOGRAMS");
+                  request.setToUnit("kilograms");
                   break;
                 case 2:
-                  request.setToUnit("POUNDS");
+                  request.setToUnit("pounds");
                   break;
                 case 0:
                   return;
@@ -648,10 +648,10 @@ public class Client {
               fromSelection = Integer.parseInt(reader.readLine());
               switch (fromSelection) {
                 case 1:
-                  request.setFromUnit("CELSIUS");
+                  request.setFromUnit("celsius");
                   break;
                 case 2:
-                  request.setFromUnit("FAHRENHEIT");
+                  request.setFromUnit("fahrenheit");
                   break;
                 case 0:
                   return;
@@ -670,10 +670,10 @@ public class Client {
               toSelection = Integer.parseInt(reader.readLine());
               switch (toSelection) {
                 case 1:
-                  request.setToUnit("CELSIUS");
+                  request.setToUnit("celsius");
                   break;
                 case 2:
-                  request.setToUnit("FAHRENHEIT");
+                  request.setToUnit("fahrenheit");
                   break;
                 case 0:
                   return;
@@ -701,7 +701,7 @@ public class Client {
         
         case 0:
           // Exit converter
-          break;
+          return;
         
         default:
           System.out.println("Invalid selection. Please choose a number from the list. \n\n");
