@@ -1,0 +1,125 @@
+// This service manages a movie/TV show rating and review system.
+// Users can search for movies, add new movies, view ratings, 
+// see all reviews, add ratings, and leave reviews.
+// The server must maintain persistent state - save data to a JSON file.
+//
+// INITIALIZATION:
+// - A movies.json file is provided with initial movie data (title|year|genre format, one per line)
+// - On first run, load movies from movies.txt and create movie_data.json
+// - On subsequent runs, load from movie_data.json (which preserves ratings and reviews)
+// - Save to movie_data.json after each add/update operation
+//
+// IMPORTANT: Make sure to validate all inputs before processing
+// TODO: Consider implementing user authentication system (bonus feature)
+
+// some error messages to use in the servers responses:
+// no movies in database yet - for search and list operations
+// no movies found matching query - for search
+// movie not found - for rating/review operations
+// rating must be between 1-10 - for invalid ratings
+// review text is required - for empty reviews
+// missing field - for any request with empty required field
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "service";
+option java_outer_classname = "RottenTomatoesProto";
+
+import "google/protobuf/empty.proto";
+
+package services;
+
+service RottenTomatoes {
+  rpc searchMovies (MovieSearchRequest) returns (MovieListResponse) {}
+  rpc addMovie (AddMovieRequest) returns (AddMovieResponse) {}
+  rpc getMovieRating (MovieRequest) returns (RatingResponse) {}
+  rpc getMovieReviews (MovieRequest) returns (ReviewListResponse) {}
+  rpc addRating (RatingRequest) returns (RatingResponse) {}
+  rpc addReview (ReviewRequest) returns (ReviewResponse) {}
+}
+
+// Movie information
+message Movie {
+  string title = 1;
+  int32 year = 2;
+  string genre = 3;
+  double overall_rating = 4; // Average rating from all users
+  int32 rating_count = 5; // Number of ratings
+  repeated Review reviews = 6; // All reviews for this movie
+}
+
+// Review information
+message Review {
+  string user_name = 1;
+  int32 rating = 2; // 1-10 scale
+  string review_text = 3;
+  string date = 4; // YYYY-MM-DD format
+}
+
+// Request to search for movies
+message MovieSearchRequest {
+  string query = 1; // Search query (checks title and genre)
+}
+
+// Request to add a new movie
+message AddMovieRequest {
+  string title = 1;
+  int32 year = 2;
+  string genre = 3;
+}
+
+// Request to get movie info (for rating/reviews)
+message MovieRequest {
+  string title = 1;
+}
+
+// Request to add a rating
+message RatingRequest {
+  string title = 1;
+  string user_name = 2;
+  int32 rating = 3; // 1-10 scale
+}
+
+// Request to add a review
+message ReviewRequest {
+  string title = 1;
+  string user_name = 2;
+  int32 rating = 3; // 1-10 scale
+  string review_text = 4;
+}
+
+// Response for movie search
+message MovieListResponse {
+  bool isSuccess = 1;
+  repeated Movie movies = 2; // All movies or filtered by search
+  string error = 3; // Error message if isSuccess is false
+}
+
+// Response for adding a movie
+message AddMovieResponse {
+  bool isSuccess = 1;
+  string message = 2; // Success message
+  string error = 3; // Error message if isSuccess is false
+}
+
+// Response for rating operations
+message RatingResponse {
+  bool isSuccess = 1;
+  string message = 2; // Success message or current rating info
+  string error = 3; // Error message if isSuccess is false
+}
+
+// Response for review operations
+message ReviewResponse {
+  bool isSuccess = 1;
+  string message = 2; // Success message
+  string error = 3; // Error message if isSuccess is false
+}
+
+// Response for getting reviews
+message ReviewListResponse {
+  bool isSuccess = 1;
+  repeated Review reviews = 2; // All reviews for the movie
+  string error = 3; // Error message if isSuccess is false
+}
